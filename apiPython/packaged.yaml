@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'binary_puri
+
+  Sample SAM Template for binary_puri
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+    Tracing: Active
+  Api:
+    Cors:
+      AllowMethods: '''OPTIONS,POST,GET,DELETE,PUT'''
+      AllowHeaders: '''*'''
+      AllowOrigin: '''*'''
+    TracingEnabled: true
+Parameters:
+  SecurityGroupId:
+    Type: String
+  SubnetId:
+    Type: String
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://binay-node/8026064cdc850d1b2bec05ac13ef6acb
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          GIT_SSH_COMMAND: ssh -o StrictHostKeyChecking=no
+      VpcConfig:
+        SubnetIds:
+        - Ref: SubnetId
+        SecurityGroupIds:
+        - Ref: SecurityGroupId
+      Architectures:
+      - x86_64
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+        HelloWorldPostEvent:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: post
+        HelloWorldPutEvent:
+          Type: Api
+          Properties:
+            Path: /hello/{id}
+            Method: put
+        HelloWorldDeleteEvent:
+          Type: Api
+          Properties:
+            Path: /hello/{id}
+            Method: delete
+    Metadata:
+      SamResourceId: HelloWorldFunction
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+    Metadata:
+      SamResourceId: ApplicationResourceGroup
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+    Metadata:
+      SamResourceId: ApplicationInsightsMonitoring
+Outputs:
+  HelloWorldApi:
+    Description: API ENDPOINT
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  ApiGatewayUrl:
+    Description: API Gateway URL
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello

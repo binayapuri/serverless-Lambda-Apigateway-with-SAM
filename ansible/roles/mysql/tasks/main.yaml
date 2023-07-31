@@ -1,0 +1,26 @@
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install MySQL server and client
+  apt:
+    name:
+      - mysql-server
+      - mysql-client
+
+- name: Start MySQL service
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Connect to MySQL server and create the database
+  command: mysql -h bp-rds.cmuokqciitb8.us-east-1.rds.amazonaws.com -u binay -ppassword -e "CREATE DATABASE IF NOT EXISTS todos;"
+
+- name: Connect to MySQL server and create the Students table
+  command: mysql -h bp-rds.cmuokqciitb8.us-east-1.rds.amazonaws.com -u binay -ppassword -D todos -e "CREATE TABLE IF NOT EXISTS Students (StudentID INT AUTO_INCREMENT PRIMARY KEY, LastName VARCHAR(255) NOT NULL, FirstName VARCHAR(255) NOT NULL, Address VARCHAR(255), City VARCHAR(255), Remark VARCHAR(255));"
+
+
+- name: Insert data into Students table
+  command: mysql -h bp-rds.cmuokqciitb8.us-east-1.rds.amazonaws.com -u binay -ppassword -D todos -e "INSERT INTO Students (LastName, FirstName, Address, City, Remark) VALUES ('Doe', 'John', '123 Main St', 'City1', 'Remark1'), ('Smith', 'Jane', '456 Elm St', 'City2', 'Remark2'), ('Johnson', 'Michael', '789 Oak St', 'City3', 'Remark3'), ('Williams', 'Emily', '321 Pine St', 'City4', 'Remark4'), ('Brown', 'David', '654 Maple St', 'City5', 'Remark5');"

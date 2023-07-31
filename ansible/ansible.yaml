@@ -1,0 +1,10 @@
+---
+- hosts: bp_groups
+  become: true
+  roles:
+    - mysql
+ 
+  
+  # default ma binayapuri gayara yo rakeko
+  vars:
+    ansible_user: ubuntu

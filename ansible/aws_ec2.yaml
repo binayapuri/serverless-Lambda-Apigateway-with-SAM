@@ -1,0 +1,9 @@
+plugin: amazon.aws.aws_ec2
+aws_profile: default
+regions:
+   - us-east-1
+hostnames:
+  - ip-address
+  #- private-ip-address
+groups:
+  bp_groups: "'major' in tags.project"  
